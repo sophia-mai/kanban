@@ -1,3 +1,4 @@
+import { useDraggable } from "@dnd-kit/core";
 import { MoreHorizontal, Trash2 } from "lucide-react";
 import {
   Card,
@@ -19,16 +20,29 @@ import type { Doc } from "../../convex/_generated/dataModel";
 
 type TaskCardProps = {
   task: Doc<"tasks">;
+  isOverlay?: boolean;
 };
 
-function TaskCard({ task }: TaskCardProps) {
+function TaskCard({ task, isOverlay }: TaskCardProps) {
   const updateStatus = useMutation(api.tasks.updateStatus);
   const removeTask = useMutation(api.tasks.remove);
 
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: task._id,
+    disabled: isOverlay,
+  });
+
   return (
-    <Card className="transition-shadow hover:shadow-md">
+    <Card
+      ref={isOverlay ? undefined : setNodeRef}
+      className={`transition-shadow hover:shadow-md ${isDragging ? "opacity-0" : ""} ${isOverlay ? "shadow-lg ring-2 ring-primary opacity-100" : ""}`}
+    >
       <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium leading-snug">
+        <CardTitle
+          className="flex-1 cursor-grab text-sm font-medium leading-snug active:cursor-grabbing"
+          {...listeners}
+          {...attributes}
+        >
           {task.title}
         </CardTitle>
         <DropdownMenu>

@@ -8,7 +8,8 @@ import {
   type DragStartEvent,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery } from "convex/react";
+import useUpdateTaskStatus from "@/hooks/use-update-task-status";
 import { api } from "../../convex/_generated/api";
 import type { Doc, Id } from "../../convex/_generated/dataModel";
 import Column from "@/components/column";
@@ -25,7 +26,7 @@ const COLUMNS: { title: string; status: TaskStatus }[] = [
 
 function KanbanBoard() {
   const tasks = useQuery(api.tasks.list);
-  const updateStatus = useMutation(api.tasks.updateStatus);
+  const updateStatus = useUpdateTaskStatus();
   const [activeTask, setActiveTask] = useState<Doc<"tasks"> | null>(null);
 
   const sensors = useSensors(
